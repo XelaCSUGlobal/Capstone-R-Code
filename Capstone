@@ -1,0 +1,296 @@
+library(ggplot2)
+library(dplyr)
+library(ggthemes)
+library(extrafont)
+library(readr)
+library(car)
+#importing data
+btcdata <- read.csv("BTC-USD.csv")
+ethdata <-read.csv("ETH-USD.csv")
+xmrdata <-read.csv("XMR-USD.csv")
+golddata <- read.csv("goldtroy-USD.csv")
+bonddata <- read.csv("BONDYIELDS.csv")
+cboedata <- read.csv("CBOEVIX.csv")
+cpidata <-read.csv("CPI.csv")
+interestdata <- read.csv("FEDFUNDS.csv")
+labordata <- read.csv("labor.csv")
+pcedata <- read.csv("PCE.csv")
+sp500data <- read.csv("SP500.csv")
+master <- read.csv("Master Sheet.csv")
+#storing values of metrics and commodities
+btc <- btcdata$Adjusted.BTC
+eth <- ethdata$Adjusted.ETH
+xmr <- xmrdata$Adjusted.XMR
+gold <- golddata$Adjusted.Gold
+cboe <- cboedata$open
+interest <- interestdata$FEDFUNDS
+bond <- bonddata$IRLTLT01USM156N
+cpi <- cpidata$CPILFESL
+labor <- labordata$CLF16OV
+house <- housingdata$MSPUS
+pce <- pcedata$PCE
+sp500 <- sp500data$SP500Val
+#plotting relationships
+plot(cpi, cboe)
+plot(cpi, interest)
+plot(cpi, bond)
+plot(cpi, labor)
+plot(cpi, pce)
+plot(cpi, sp500)
+#creating linear regression models of relationships
+bondmodel <- lm(bond ~ cpi)
+cboemodel <- lm(cboe ~ cpi)
+interestmodel <- lm(interest ~ cpi)
+labormodel <- lm(labor ~ cpi)
+pcemodel <- lm(pce ~ cpi)
+sp500model <- lm(sp500 ~ cpi)
+summary(bondmodel)
+summary(cboemodel)
+summary(interestmodel)
+summary(labormodel)
+summary(pcemodel)
+summary(sp500model)
+cpimodel <- lm(cpi ~ sp500)
+summary(cpimodel)
+#histograms for metrics and commodities
+hist(bond)
+hist(btc)
+hist(eth)
+hist(gold)
+hist(xmr)
+hist(interest)
+hist(cpi)
+hist(cboe)
+hist(labor)
+hist(pce)
+hist(sp500)
+#CPI Scatterplots
+#CPI S&P500
+master %>% # data layer
+  ggplot(aes(x = SP500, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and S&P500 from August 2015 to August 2022",
+    y = "Consumer Price Index"
+  )+theme(
+    title = element_text(size = 14, face = "italic")
+  )
+#CPI Bond
+master %>% # data layer
+  ggplot(aes(x = BONDS, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and Cumulative Bond Percentage Yields from August 2015 to August 2022",
+    y = "Consumer Price Index",
+    x = "Bond Yields"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#CPI CBOE
+master %>% # data layer
+  ggplot(aes(x = CBOE, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and CBOE Volatility Index (VIX) from August 2015 to August 2022",
+    y = "Consumer Price Index",
+    x = "VIX"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#interest
+master %>% # data layer
+  ggplot(aes(x = INTEREST, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and Federal Interest Rates from August 2015 to August 2022",
+    y = "Consumer Price Index",
+    x = "Federal Reserve Interest Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#labor
+master %>% # data layer
+  ggplot(aes(x = LABOR, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and Labor Rate from August 2015 to August 2022",
+    y = "Consumer Price Index",
+    x = "Labor Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#pce
+master %>% # data layer
+  ggplot(aes(x = PCE, y = CPI)) + # axes layer
+  geom_point() + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between CPI and PCE from August 2015 to August 2022",
+    y = "Consumer Price Index",
+    x = "Personal Consumption Expenditure"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+# Basic histogram
+ggplot(cpidata, aes(x=CPILFESL)) + geom_histogram()
+# Change the width of bins
+ggplot(cpidata, aes(x=CPILFESL)) + 
+  geom_histogram(binwidth=1)
+# Change colors
+p<-ggplot(cpidata, aes(x=CPILFESL)) + 
+  geom_histogram(color="darkgreen", fill="lightgreen")
+p <- p + labs(x = "Monthly Consumer Price Index 08/2015 to 08/2022", y = "Count")+
+  theme(
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold")
+  )
+p
+
+#Commodity Scatter Plots
+#-----------------------------------------BTC
+master %>% # data layer
+  ggplot(aes(x = LABOR, y = BTC)) + # axes layer
+  geom_point(color="darkblue") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Bitcoin and Labor Rate from August 2015 to August 2022",
+    y = "Bitcoin in USD, Adjusted for Inflation",
+    x = "Labor Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = SP500, y = BTC)) + # axes layer
+  geom_point(color="darkblue") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Bitcoin and the S&P500 from August 2015 to August 2022",
+    y = "Bitcoin in USD, Adjusted for Inflation",
+    x = "S&P500"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = PCE, y = BTC)) + # axes layer
+  geom_point(color="darkblue") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Bitcoin and PCE from August 2015 to August 2022",
+    y = "Bitcoin in USD, Adjusted for Inflation",
+    x = "Personal Consumption Expenditure"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#-----------------------------------------Etherium
+master %>% # data layer
+  ggplot(aes(x = LABOR, y = ETH)) + # axes layer
+  geom_point(color="purple") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Ethereum and Labor Rate from August 2015 to August 2022",
+    y = "Ethereum in USD, Adjusted for Inflation",
+    x = "Labor Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = SP500, y = ETH)) + # axes layer
+  geom_point(color="purple") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Ethereum and the S&P500 from August 2015 to August 2022",
+    y = "Ethereum in USD, Adjusted for Inflation",
+    x = "S&P500"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = PCE, y = ETH)) + # axes layer
+  geom_point(color="purple") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Ethereum and PCE from August 2015 to August 2022",
+    y = "Ethereum in USD, Adjusted for Inflation",
+    x = "Personal Consumption Expenditure"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#-----------------------------------------Monero
+master %>% # data layer
+  ggplot(aes(x = LABOR, y = XMR)) + # axes layer
+  geom_point(color="darkred") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Monero and Labor Rate from August 2015 to August 2022",
+    y = "Monero in USD, Adjusted for Inflation",
+    x = "Labor Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = SP500, y = XMR)) + # axes layer
+  geom_point(color="darkred") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Monero and the S&P500 from August 2015 to August 2022",
+    y = "Monero in USD, Adjusted for Inflation",
+    x = "S&P500"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = PCE, y = XMR)) + # axes layer
+  geom_point(color="darkred") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Monero and PCE from August 2015 to August 2022",
+    y = "Monero in USD, Adjusted for Inflation",
+    x = "Personal Consumption Expenditure"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+#---------------------------------------------Gold
+master %>% # data layer
+  ggplot(aes(x = LABOR, y = XMR)) + # axes layer
+  geom_point(color="gold") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Gold and Labor Rate from August 2015 to August 2022",
+    y = "Troy Ounce of Gold in USD, Adjusted for Inflation",
+    x = "Labor Rate"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = SP500, y = XMR)) + # axes layer
+  geom_point(color="gold") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Gold and the S&P500 from August 2015 to August 2022",
+    y = "Troy Ounce of Gold in USD, Adjusted for Inflation",
+    x = "S&P500"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+master %>% # data layer
+  ggplot(aes(x = PCE, y = XMR)) + # axes layer
+  geom_point(color="gold") + # geom layer
+  labs(  # annotations layer
+    title = "Correlation Between Value of Gold and PCE from August 2015 to August 2022",
+    y = "Troy Ounce of Gold in USD, Adjusted for Inflation",
+    x = "Personal Consumption Expenditure"
+  )+theme(
+    title = element_text(size = 11, face = "italic")
+  )
+
+#spearman correlation tests
+cor.test(bond, cpi, method = 'spearman', exact=FALSE)
+cor.test(interest, cpi, method = 'spearman', exact=FALSE)
+cor.test(labor, cpi, method = 'spearman', exact=FALSE)
+cor.test(cboe, cpi, method = 'spearman', exact=FALSE)
+cor.test(pce, cpi, method = 'spearman', exact=FALSE)
+cor.test(sp500, cpi, method = 'spearman', exact=FALSE)
+cor.test(sp500, btc, method = 'spearman', exact=FALSE)
+cor.test(labor, btc, method = 'spearman', exact=FALSE)
+cor.test(pce, btc, method = 'spearman', exact=FALSE)
+cor.test(sp500, xmr, method = 'spearman', exact=FALSE)
+cor.test(pce, xmr, method = 'spearman', exact=FALSE)
+cor.test(labor, xmr, method = 'spearman', exact=FALSE)
+cor.test(sp500, gold, method = 'spearman', exact=FALSE)
+cor.test(labor, gold, method = 'spearman', exact=FALSE)
+cor.test(pce, gold, method = 'spearman', exact=FALSE)
+cor.test(sp500, eth, method = 'spearman', exact=FALSE)
+cor.test(labor, eth, method = 'spearman', exact=FALSE)
+cor.test(pce, eth, method = 'spearman', exact=FALSE)
+cor.test(cpi, eth, method = 'spearman', exact=FALSE)
+cor.test(cpi, btc, method = 'spearman', exact=FALSE)
+cor.test(cpi, xmr, method = 'spearman', exact=FALSE)
+cor.test(cpi, gold, method = 'spearman', exact=FALSE)
